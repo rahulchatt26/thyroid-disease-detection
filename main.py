@@ -1,8 +1,20 @@
-with open("requirements.txt") as requirement_file:
-        requirement_list = requirement_file.readlines()     # reading each line from the file
-requirement_list = [requirement_name.replace("\n", "") for requirement_name in requirement_list]    # Removing '\n' from the list of libraries
-    
-# if HYPHEN_E_DOT in requirement_list:
-#     requirement_list.remove(HYPHEN_E_DOT)      # Removing '-e .' as it is not required
+from thyroid.components.data_ingestion import DataIngestion
+from thyroid.exception import ThyroidException
+import os, sys
+from thyroid.pipeline import training_pipeline
+from thyroid.entity import config_entity
 
-print(requirement_list)
+
+
+if __name__ == "__main__":
+        try:
+                training_pipeline_config = config_entity.TrainingPipelineConfig()
+
+                #data ingestion
+                data_ingestion_config = config_entity.DataIngestionConfig(training_pipeline_config=training_pipeline_config)
+                print(data_ingestion_config.to_dict)
+                data_ingestion = DataIngestion(data_ingestion_config=data_ingestion_config)
+                data_ingestion_arfifact = data_ingestion.initiate_data_ingestion()
+
+        except Exception as e:
+                raise ThyroidException(e,sys)
